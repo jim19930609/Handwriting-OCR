@@ -18,12 +18,15 @@ def conv_layer(inpt, filter_shape, stride):
 
     filter_ = weight_variable(filter_shape)
     conv = tf.nn.conv2d(inpt, filter=filter_, strides=[1, stride, stride, 1], padding="SAME")
-    mean, var = tf.nn.moments(conv, axes=[0,1,2])
-    beta = tf.Variable(tf.zeros([out_channels]), name="beta")
-    gamma = weight_variable([out_channels], name="gamma")
+    mean, var = tf.nn.moments(conv, axes=[0,1,2])    
     
-    batch_norm = tf.nn.batch_norm_with_global_normalization(
-        conv, mean, var, beta, gamma, 0.001,
+    moving_mean = tf.Variable(tf.zeros(mean.get_shape()))                                                                                                      
+    moving_var = tf.Variable(tf.zeros(var.get_shape()))                                                                                                        
+    beta = tf.Variable(tf.zeros([out_channels]), name="beta")                                                                                                  
+    gamma = weight_variable([out_channels], name="gamma")                                                                                                      
+
+    batch_norm = tf.nn.batch_norm_with_global_normalization(                                                                                                   
+        conv, moving_mean, moving_var, beta, gamma, 0.001,                                                                                                     
         scale_after_normalization=True)
 
     out = tf.nn.relu(batch_norm)
@@ -90,10 +93,12 @@ def resnet(inpt, n, cifar):
             layers.append(conv4)
 
     with tf.variable_scope('fc'):
-        #global_pool = tf.reduce_mean(layers[-1], [1, 2])
         flat_conv = tf.contrib.layers.flatten(layers[-1])
 
-        innerproduct = fc_layer(flat_conv, [3136, cifar])
+        flat = tf.contrib.layers.flatten(conv4)                                                                                                                
+        flat_shape = int(flat.get_shape()[1])                                                                                                                  
+        
+        innerproduct = fc_layer(flat, [flat_shape, cifar])
         layers.append(innerproduct)
 
     return flat_conv, innerproduct
