@@ -232,9 +232,6 @@ def lstm_recognize(image, width, sess, prediction, img):
   image_data = np.expand_dims(img, axis=-1)
   image_data = align_image(image_data)
   
-  cv2.imshow('test', image_data)
-  cv2.waitKey(0)
-
   #Get prediction for single image (isa SparseTensorValue)
   [output] = sess.run(prediction,{ image: image_data, 
                                    width: image_data.shape[1]} )
