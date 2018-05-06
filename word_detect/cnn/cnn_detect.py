@@ -7,11 +7,11 @@ import os
 import tensorflow as tf
 from skimage import transform
 from net.resnet_train import resnet
-from lstm.validate import build_lstm, lstm_recognize
 
 np.set_printoptions(threshold=np.nan)
 
-def build_cnn_network(model):
+def build_cnn_network():
+  model = "cnn/model/"
   graph_res = tf.Graph()
   with graph_res.as_default():
     image = tf.placeholder(tf.float32, [None, 28, 28, 1])
@@ -25,7 +25,7 @@ def build_cnn_network(model):
     saver = tf.train.Saver()
     saver.restore(sess, model)
 
-  return sess, graph_res, image, score
+  return sess, image, score
 
 def cnn_recognize_word(image, score, sess, img):
   # Hash: label -> char
@@ -117,16 +117,10 @@ def align_image(img):
   image = img[tb:bb+1,lb:rb+1]
   return image
 
-if __name__ == "__main__":
-  limit_pixel = 10
-  limit_char = 5
-  limit_word = 12 * limit_char
-  target_h = 300
-  path = "images/rand.png"
+def cnn_detect(img, network, limit_pixel=10, limit_char=5, limit_word_mult=12, target_h=300):
+  limit_word = limit_word_mult * limit_char
 
   # Readin Sentence Image, then Rescale to [32,32]
-  img = cv2.imread(path)
-  img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
   img = align_image(img)
 
   scale = float(target_h) / img.shape[0]
@@ -198,10 +192,6 @@ if __name__ == "__main__":
       blank_pos.append(ind)
       cv2.rectangle(bin_show, (left+15, 0), (right-15, h-1), Color[2], 6)
   
-  # Recognize a word
-  model_path = "model/"
-  sess, graph_res, image, features = build_cnn_network(model_path)
-  
   predicted_list = []
   for i in range(0, len(blanck_region_char), 2):
     # Initialize a word
@@ -217,28 +207,32 @@ if __name__ == "__main__":
     char = img_padded[:, left:right + 1]
 
     # Recognize Word
-    pred_c, pred_s = cnn_recognize_word(image, features, sess, char)
+    sess, image, score = network
+    pred_c, pred_s = cnn_recognize_word(image, score, sess, char)
 
     # Assembly Sentence
     predicted_list.append(pred_c)
     
     # Record Word
     char_list.append(char)
-
+    
+    '''
     # Display Result
     cv2.rectangle(bin_show, (left, 0), (right, h-1), Color[1], 6)
     index += 1
        
     cv2.imwrite("results/char_" + str(i) + ".jpg", char)
-    
+    '''
   # Assemble Sentence
   for i in range(len(blank_pos)):
     pos = blank_pos[i] + i
     predicted_list.insert(pos, " ")
   pred_sentence = "".join(predicted_list)
+  
+  '''
   print predicted_list
   print pred_sentence  
-
+  
   plt.scatter(range(len(histogram)), histogram, marker=".")
   plt.show()
   
@@ -250,4 +244,6 @@ if __name__ == "__main__":
   
   cv2.imshow('test', bin_show)
   cv2.waitKey(0)
-  
+  '''
+
+  return pred_sentence, predicted_list

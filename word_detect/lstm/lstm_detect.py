@@ -6,8 +6,7 @@ import cv2
 import os
 import tensorflow as tf
 from skimage import transform
-from net.resnet_train import resnet
-from lstm.validate import build_lstm, lstm_recognize
+from validate import build_lstm, lstm_recognize
 
 np.set_printoptions(threshold=np.nan)
 
@@ -69,16 +68,8 @@ def align_image(img):
   image = img[tb:bb+1,lb:rb+1]
   return image
 
-if __name__ == "__main__":
-  limit_pixel = 10
-  limit_char = 60
-  target_h = 300
-  #path = "images/sch2.jpg"
-  path = "images/rand_t.png"
-
+def lstm_detect(img, network, limit_pixel=10, limit_char=60, target_h=300):
   # Readin Sentence Image, then Rescale to [32,32]
-  img = cv2.imread(path)
-  img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
   img = align_image(img)
 
   scale = float(target_h) / img.shape[0]
@@ -135,9 +126,6 @@ if __name__ == "__main__":
   # Generate words
   Color = [(255,0,0), (0,255,0), (0,0,255)]
   
-  cv2.imshow('orig', img)
-  cv2.waitKey(0)
-
   predicted_list = []
   for i in range(0, len(blank_region), 2):
     # Initialize a word
@@ -152,8 +140,8 @@ if __name__ == "__main__":
     # Obtain word image
     word = img_padded[:, left:right + 1]
     
-    image, width, sess, prediction = build_lstm()
-    
+    # LSTM Network Inference
+    image, width, sess, prediction = network
     pred_w = lstm_recognize(image, width, sess, prediction, word)
     
     # Record word
@@ -163,7 +151,6 @@ if __name__ == "__main__":
     cv2.rectangle(bin_show, (left, 0), (right, h-1), Color[1], 6)
 
   pred_sentence = " ".join(predicted_list)
-  print pred_sentence
   
   '''
   plt.scatter(range(len(histogram)), histogram, marker=".")
@@ -178,3 +165,5 @@ if __name__ == "__main__":
   cv2.imshow('test', bin_show)
   cv2.waitKey(0)
   '''
+  
+  return pred_sentence, predicted_list
