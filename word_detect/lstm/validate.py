@@ -137,12 +137,12 @@ def align_image(img):
   
   # Cut Edges
   limit = 2
-  off = 2
+  off = 5
   lb = 0
   rb = 0
   tb = 0
   bb = 0
-
+  
   for j in range(binary.shape[1]):
     hist = np.sum(binary[:,j])
     if hist >= limit:
@@ -182,14 +182,19 @@ def align_image(img):
       else:
         bb = binary.shape[0] - 1
       break
-
+  
   image = img[tb:bb+1, lb:rb+1]
-
+  
   # Transform and Resize
   scale = float(31.0/image.shape[0])                                                                                                            
   image = transform.rescale(image, [scale,scale]) * 255
   image = np.uint8(image)
 
+  
+  image_tmp = image[:,:,0]
+  image_tmp = np.pad(image_tmp, ((0,0), (5,5) ), 'constant', constant_values=(255))
+  image = np.expand_dims(image_tmp, axis=-1)
+  
   return image
 
 def build_lstm():
@@ -223,8 +228,12 @@ def build_lstm():
 def lstm_recognize(image, width, sess, prediction, img):
   if img.dtype == "float32" or img.dtype == "float64":
     img = np.uint8( (img * 255) )
+  
   image_data = np.expand_dims(img, axis=-1)
   image_data = align_image(image_data)
+  
+  cv2.imshow('test', image_data)
+  cv2.waitKey(0)
 
   #Get prediction for single image (isa SparseTensorValue)
   [output] = sess.run(prediction,{ image: image_data, 

@@ -17,10 +17,10 @@ def align_image(img):
   sobel = np.abs(sobel1) + np.abs(sobel2)                                                                                                                      
   sobel = np.uint8(sobel)                                                                                                                                      
   ret, binary = cv2.threshold(sobel, 1, 255, cv2.THRESH_OTSU+cv2.THRESH_BINARY)                                                                                
-                                                                                                                                                               
+
   # Cut Edges                                                                                                                                                  
-  limit = 2                                                                                                                                                    
-  off = 2
+  limit = 2 
+  off = 4
   lb = 0                                                                                                                                                       
   rb = 0                                                                                                                                                       
   tb = 0                                                                                                                                                       
@@ -66,6 +66,7 @@ def align_image(img):
         bb = binary.shape[0] - 1                                                                                                                               
       break  
   image = img[tb:bb+1,lb:rb+1]
+
   return image
 
 def lstm_detect(img, network, limit_pixel=10, limit_char=60, target_h=300):
@@ -74,7 +75,11 @@ def lstm_detect(img, network, limit_pixel=10, limit_char=60, target_h=300):
 
   scale = float(target_h) / img.shape[0]
   img = transform.rescale(img, scale)
-
+  img[:3,:] = 1.0
+  img[:,:3] = 1.0
+  img[-3:,:] = 1.0
+  img[:,-3:] = 1.0
+  
   # Generate binary image
   sobel1 = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize = 7)
   sobel2 = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize = 7)
@@ -89,12 +94,10 @@ def lstm_detect(img, network, limit_pixel=10, limit_char=60, target_h=300):
   cont = False
   tmp = []
 
-  # Perform Paddings
-  img_padded = np.pad(img, ((0,0), (limit_char,limit_char) ), 'constant', constant_values=(0))
-  sobel_padded = np.pad(sobel, ((0,0), (limit_char,limit_char) ), 'constant', constant_values=(0))
+  img_padded = np.pad(img, ((0,0), (limit_char,limit_char) ), 'constant', constant_values=(1.0))
   binary_padded = np.pad(binary, ((0,0), (limit_char,limit_char) ), 'constant', constant_values=(0))
   histogram = np.pad(histogram, (limit_char,limit_char), 'constant', constant_values=(0))
-  
+
   # Get Blank Regions in form of (start, end) 
   for i in range(histogram.shape[0]):
     if histogram[i] <= limit_pixel:
@@ -129,7 +132,7 @@ def lstm_detect(img, network, limit_pixel=10, limit_char=60, target_h=300):
   predicted_list = []
   for i in range(0, len(blank_region), 2):
     # Initialize a word
-    off = 2
+    off = 30
     left = blank_region[i] - off
     right = blank_region[i+1] + off
     
@@ -151,19 +154,5 @@ def lstm_detect(img, network, limit_pixel=10, limit_char=60, target_h=300):
     cv2.rectangle(bin_show, (left, 0), (right, h-1), Color[1], 6)
 
   pred_sentence = " ".join(predicted_list)
-  
-  '''
-  plt.scatter(range(len(histogram)), histogram, marker=".")
-  plt.show()
-  
-  img = np.uint8( (img * 255) )
-  cv2.imwrite("results/cut.jpg", img)
-  cv2.imwrite("results/sobel.jpg", sobel)
-  cv2.imwrite("results/binary.jpg", binary)
-  cv2.imwrite("results/divide.jpg", bin_show)
-  
-  cv2.imshow('test', bin_show)
-  cv2.waitKey(0)
-  '''
   
   return pred_sentence, predicted_list

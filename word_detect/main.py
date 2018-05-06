@@ -1,9 +1,21 @@
-from helper import Solver
 import tkinter as tk
+import PIL
+from PIL import ImageTk
+from helper import Solver
 from tkinter import messagebox
 from tkFileDialog import askopenfilename, asksaveasfilename
 
+def Quit():
+  window.destroy()
+
 def Start():
+  '''
+  try:
+    result = solver.Recognize()
+  except:
+    messagebox.showinfo("Error", "Please load the image first")
+    return
+  '''
   result = solver.Recognize()
   print result
 
@@ -129,12 +141,13 @@ def Layout_Setup():
   
   # Define Button Objects
   file_path = tk.StringVar()
-  tk.Label(window, textvariable = file_path, font=('Arial', 10), width=100, height=4, wraplength = 800).grid(row=5, rowspan=1, column=3, columnspan=3, pady=5,padx=30)
+  tk.Label(window, textvariable = file_path, font=('Arial', 10), width=100, height=4, wraplength = 800).grid(row=4, rowspan=1, column=3, columnspan=3, pady=5,padx=30)
 
-  tk.Button(window, text='Load File',        width=40, height=4,  command=LoadFile).grid(row=6,rowspan=1,column=3,columnspan=1,pady=5,padx=20)
-  tk.Button(window, text='Save File',        width=40, height=4,  command=SaveFile).grid(row=6,rowspan=1,column=5,columnspan=1,pady=5,padx=20)
-  tk.Button(window, text='Start',            width=40, height=4,  command=Start)   .grid(row=6,rowspan=1,column=4,columnspan=1,pady=5,padx=20)
-  tk.Button(window, text='Confirm Setting',  width=20, height=4,  command=Set_Parameters) .grid(row=9,column=0,columnspan=3,pady=5,padx=20)
+  tk.Button(window, text='Load File',        width=40, height=2,  command=LoadFile)       .grid(row=6,rowspan=1,column=3,columnspan=1,pady=0,padx=20)
+  tk.Button(window, text='Save File',        width=40, height=2,  command=SaveFile)       .grid(row=8,rowspan=1,column=3,columnspan=1,pady=0,padx=20)
+  tk.Button(window, text='Start',            width=40, height=2,  command=Start)          .grid(row=6,rowspan=1,column=4,columnspan=1,pady=0,padx=20)
+  tk.Button(window, text='Quit',             width=40, height=2,  command=Quit)           .grid(row=8,rowspan=1,column=4,columnspan=1,pady=0,padx=20)
+  tk.Button(window, text='Confirm Setting',  width=20, height=2,  command=Set_Parameters) .grid(row=9,          column=0,columnspan=3,pady=0,padx=20)
   
   variables = {"limit_pixel":limit_pixel, "limit_char":limit_char, "limit_word_mult":limit_word_mult,
                "target_h":target_h, "method":method, "file_path":file_path}

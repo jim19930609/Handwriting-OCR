@@ -1,4 +1,5 @@
 import cv2
+from preprocess.linesegment import Line_separation
 from lstm.lstm_detect import lstm_detect, build_lstm
 from cnn.cnn_detect import cnn_detect, build_cnn_network
 
@@ -9,8 +10,7 @@ class Solver:
     self.method = "lstm"
 
   def Read_Paragraph_Image(self, path):
-    img = cv2.imread(path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = cv2.imread(path, 0)
     self.paragraph = Paragraph(img)
     self.paragraph.Sentence_separation()
  
@@ -43,14 +43,13 @@ class Paragraph:
 
 
   def Sentence_separation(self):
-    ################################################
-    #   Deploy Sentence Separation Algorithm Here  #
-    ################################################
     img = self.img
-    self.sentence_collect.append(Sentence(img))
-    raise NotImplementedError
+    separated_list = Line_separation(img)
+    for line in separated_list:
+      line = line.astype('uint8')
+      self.sentence_collect.append(Sentence(line))
 
-  
+
   def Set_Parameters(self, limit_pixel=10, limit_char=60, limit_word_mult=12, target_h=300):
     for sentence in self.sentence_collect:
       sentence.limit_pixel = limit_pixel
