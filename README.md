@@ -13,7 +13,6 @@ You need following libraries to run the code:
 <br>
 
 # 2. **word_detect**:
--------
 Word Detection from Sentence + Word Recognition with CNN Network  
 
 ## cnn_detect:  
@@ -31,7 +30,6 @@ Word Detection from Sentence + Word Recognition with CNN Network
 <br>
 
 # 3. **model_training**:
--------
 Training Code of Neural Network for Recognition purpose
 
 ## cnn_train: Train CNN network for recognition  
