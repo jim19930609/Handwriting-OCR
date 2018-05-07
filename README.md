@@ -10,7 +10,7 @@ Text Documents Optical Character Recognition
 ##Opencv
 ##Numpy
 
-\<br>
+<br>
 
 2. **word_detect**:
 -------
@@ -18,17 +18,17 @@ Word Detection from Sentence + Word Recognition with CNN Network
 
 #cnn_detect:  
 
-\*python cnn_detect.py
+*python cnn_detect.py
 
-\<br>
+<br>
 
 # lstm_detect:  
 
-\*Download the lstm model from google drive: "https://drive.google.com/file/d/1fvNFbq1PWx_7PE0B9MnBmWHPVAUy8zKI/view?usp=sharing"
-\*place the downloaded model folder at word_detect/lstm/
-\*python lstm_detect.py
+*Download the lstm model from google drive: "https://drive.google.com/file/d/1fvNFbq1PWx_7PE0B9MnBmWHPVAUy8zKI/view?usp=sharing"
+*place the downloaded model folder at word_detect/lstm/
+*python lstm_detect.py
 
-\<br>
+<br>
 
 3. **model_training**:
 -------
