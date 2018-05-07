@@ -1,0 +1,15 @@
+This is a test case Of the text recognition projects
+Text in Images and Mideo frames caries important information for Misual
+content understanding and retrieal In this papers by using multiscale
+aelet features 1e propose A noel coarsestosfine algorithm that is able
+to locate text lines en under complex background Firsty in the coarser
+detections after the aelet enerBy feature Is calculated to locate al posible
+text pixelsy a densityrbased region groing method is deloped to conect
+these pixels into regions hich are further separated into candidate text
+lines by structural informations Secondlye in the fine detectiony ith four
+Kinds of texture features extracted to represent the texture patern of a
+text lines d forard search algorithm is apled to select the most efectie
+featuresy
+Finaly an sVm clasier is used to identifty true text from the candidates
+based on the selected featuresy Experimental results shor that this aproach
+can fast and robustly detect text lines under karious conditionsy

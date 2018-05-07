@@ -123,6 +123,7 @@ def binarize(mask):
 ##################################
 def remove_image(directory):
     original_image = read_gray(directory)
+    original_image1 = cv2.imread(directory,0)
     # cv2.imwrite("./result_image/original_image.jpg", original_image)
     # save the original size of the image in order to recover later
     # origin_height, origin_width = original_image.shape
@@ -220,4 +221,4 @@ def remove_image(directory):
     # result_mask * 255,
     # result_mask * original_image
 
-    return result_mask * original_image
+    return result_mask * original_image1

@@ -1,8 +1,8 @@
 from helper import Solver
   
-path = "images/rand.png"
+path = "images/TestCase1.png"
 limit_pixel = 10
-limit_char = 34
+limit_char = 35
 limit_word_mult = 12
 target_h = 300
 method = "lstm"
