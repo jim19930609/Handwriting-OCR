@@ -3,6 +3,7 @@ Text Documents Optical Character Recognition
 
 # 1. Required Packages and Credits
 LSTM part are developed from https://github.com/weinman/cnn_lstm_ctc_ocr
+<br>
 You need following libraries to run the code:
 * Tkinter
 * Tensorflow
@@ -40,7 +41,7 @@ Training Code of Neural Network for Recognition purpose
 * Use "gunzip" command to unzip all .gz files
 * cd "model_training/cnn_train", then "python main.py"
 * Use user interface for further operations
-![Graphical User Interface](https://github.com/jim19930609/Handwriting-OCR/gui.png "GUI")
+![Graphical User Interface](https://github.com/jim19930609/Handwriting-OCR/blob/master/gui.png "GUI")
 
 <br>
 
