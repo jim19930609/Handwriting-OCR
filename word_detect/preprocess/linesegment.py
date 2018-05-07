@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import sauvola_binarize
 import deskew
+import remove_image
 
-filenames = ['testslant1.jpg']
 
 ## define function to localize line
 def locateline(im, thresh):
@@ -60,7 +60,7 @@ def locateline(im, thresh):
     #print lineindexes
     return lineindexes
 
-def lineseg(lineindexes, im):
+def lineseg(lineindexes, im, img):
   (h,w) = np.shape(im)
   sentence_list = []
   for i in range(len(lineindexes)):
@@ -80,19 +80,36 @@ def lineseg(lineindexes, im):
   return sentence_list
 
 def Line_separation(img):
-  imbw = 255 - sauvola_binarize.binarize(img)
-  #print 'finish binarize'
-  
+
+  im = 255 - img
+    # image used to correct skew must have black back and white words
+  rotated_img = deskew.run(im)
+  print 'correct skew'
+  cv2.imwrite('rotated_img.png', rotated_img)
+  removed_image = 255 - remove_image.remove_image('rotated_img.png')
+  print 'removed image'
+  # cv2.imwrite('/Users/yinanwang/PycharmProject/dip_courseproj/removed_img.png', removed_image)
+  imbw = sauvola_binarize.binarize(removed_image)
+  # cv2.imwrite('/Users/yinanwang/PycharmProject/dip_courseproj/binarize.png', imbw)
+  # # cv2.imwrite('/Users/yinanwang/PycharmProject/dip_courseproj/beforedialate.png', imbw)
   kernel = np.ones((3,3),np.uint8)
-  dialation_image = cv2.dilate(imbw,kernel,iterations=1)
-  blur_image = cv2.blur(dialation_image,(3,3))
-  rotated_img = 255 - deskew.run(blur_image)
+  dialation_image = cv2.dilate(255 - imbw,kernel,iterations=1)
+  blur_image = 255 - cv2.blur(dialation_image,(5,5))
+  # cv2.imwrite('/Users/yinanwang/PycharmProject/dip_courseproj/blur_image.png', blur_image)
+
+  # imbw = 255 - sauvola_binarize.binarize(img)
+  # #print 'finish binarize'
   
+  # kernel = np.ones((3,3),np.uint8)
+  # dialation_image = cv2.dilate(imbw,kernel,iterations=1)
+  # blur_image = cv2.blur(dialation_image,(5,5))
+  # rotated_img = 255 - deskew.run(blur_image)
   # image used to do line segment must have white back and black words
-  lineindex =  locateline(rotated_img,0)
-  sentence_list = lineseg(lineindex, rotated_img)
-  
+  lineindex =  locateline(blur_image,0)
+  sentence_list = lineseg(lineindex, blur_image, img)
   #print 'finish line segmentation'
   return sentence_list
+
+
   
 
